@@ -1,0 +1,147 @@
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  padding: 16px 24px 0;
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  box-shadow: 0 14px 38px -22px rgba(0, 0, 0, 0.8);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-size: 18px;
+}
+.brand:hover {
+  text-decoration: none;
+}
+.brand-dot {
+  display: inline-block;
+  width: 26px;
+  height: 26px;
+  /* AI chatbot icon — saved to /public/brand-mark.svg */
+  background: url('/robot.png') center / contain no-repeat;
+  flex-shrink: 0;
+}
+.brand-tag {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-mute);
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  margin-left: 4px;
+}
+
+.nav-links-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-left: 12px;
+  min-width: 0;
+}
+
+.nav-account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.nav-account-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 10px 4px 4px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  color: var(--text);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.nav-account-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--border);
+  text-decoration: none;
+}
+.nav-account-link.active {
+  background: rgba(196, 18, 48, 0.12);
+  border-color: rgba(196, 18, 48, 0.35);
+}
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c41230, #f08596);
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  color: white;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+.nav-account-meta {
+  line-height: 1.15;
+}
+.nav-account-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+.nav-account-role {
+  font-size: 11px;
+  color: var(--text-mute);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+@media (max-width: 760px) {
+  .nav {
+    padding: 10px 12px 0;
+  }
+  .nav-inner {
+    flex-wrap: wrap;
+    padding: 10px 12px;
+    gap: 12px;
+  }
+  .nav-account-meta {
+    display: none;
+  }
+  .brand-tag {
+    display: none;
+  }
+  .nav-links-wrap {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+    overflow-x: auto;
+  }
+  .nav-account .btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+@media (max-width: 420px) {
+  .gooey-nav-container nav ul {
+    gap: 0.8em;
+    padding: 0;
+  }
+  .gooey-nav-container nav ul li a {
+    padding: 0.45em 0.7em;
+    font-size: 13px;
+  }
+}

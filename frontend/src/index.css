@@ -1,0 +1,499 @@
+:root {
+  color-scheme: light;
+  /* Predominantly white / warm-paper. Light surfaces let the red accent
+     and the teal secondary stay in charge of attention. */
+  --bg: #ffffff;
+  --bg-2: #f7f6f5;
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-strong: rgba(255, 255, 255, 0.92);
+  --border: rgba(15, 15, 20, 0.08);
+  --border-strong: rgba(15, 15, 20, 0.16);
+  --text: #1a1a1f;
+  --text-dim: #4a4a55;
+  --text-mute: #7a7a85;
+  /* Primary accent — Griffith deep red */
+  --accent: #d23448;        /* mid red */
+  --accent-2: #f08596;      /* soft coral */
+  --accent-3: #c41230;      /* signature deep red */
+  --accent-gradient: linear-gradient(135deg, #c41230 0%, #d23448 55%, #f08596 100%);
+  --accent-glow: rgba(196, 18, 48, 0.45);
+  /* Discreet secondary — Griffith teal */
+  --teal: #00A0B0;
+  --teal-2: #50B0C0;
+  --teal-3: #C0E0E0;
+  --teal-glow: rgba(0, 160, 176, 0.35);
+  --danger: #d23448;
+  --success: #2e9c5e;
+  --warning: #c98b1b;
+  --radius: 14px;
+  --radius-lg: 22px;
+  --shadow: 0 18px 48px -20px rgba(20, 20, 28, 0.18),
+    0 8px 24px -12px rgba(20, 20, 28, 0.10);
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ============ Dark mode ============ */
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0a0d12;
+  --bg-2: #14181f;
+  --surface: rgba(22, 26, 35, 0.7);
+  --surface-strong: rgba(30, 35, 45, 0.88);
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --text: #e8eaee;
+  --text-dim: #a8aeb8;
+  --text-mute: #6a6e78;
+  /* accents stay tuned for dark — slightly punchier */
+  --accent: #ec4d62;
+  --accent-2: #f3a3ae;
+  --accent-3: #e02547;
+  --accent-gradient: linear-gradient(135deg, #e02547 0%, #ec4d62 55%, #f3a3ae 100%);
+  --accent-glow: rgba(236, 77, 98, 0.55);
+  --teal: #2bc4d4;
+  --teal-2: #6cd2dd;
+  --teal-3: #b9e9ee;
+  --teal-glow: rgba(43, 196, 212, 0.4);
+  --danger: #ec4d62;
+  --success: #4fd086;
+  --warning: #f3b441;
+  --shadow: 0 25px 60px -20px rgba(0, 0, 0, 0.65),
+    0 8px 24px -12px rgba(0, 0, 0, 0.55);
+}
+
+html[data-theme='dark'] body {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(236, 77, 98, 0.10) 0%, transparent 45%) fixed,
+    radial-gradient(circle at 82% 90%, rgba(43, 196, 212, 0.08) 0%, transparent 50%) fixed,
+    var(--bg);
+}
+
+/* hardcoded whites that need flipping in dark mode */
+html[data-theme='dark'] .btn {
+  background: rgba(255, 255, 255, 0.04);
+}
+html[data-theme='dark'] .btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+html[data-theme='dark'] .field input,
+html[data-theme='dark'] .field textarea,
+html[data-theme='dark'] .field select,
+html[data-theme='dark'] .toolbar .search input,
+html[data-theme='dark'] .toolbar select,
+html[data-theme='dark'] .history-search input,
+html[data-theme='dark'] .composer-inner {
+  background: rgba(22, 26, 35, 0.75);
+  color: var(--text);
+}
+/* the band behind the composer (the bar that hugs the bottom of the viewport)
+   is a hardcoded white in the base CSS — override to a red-tinted glass so
+   it reads as the accent surface in dark mode. */
+html[data-theme='dark'] .composer {
+  background: linear-gradient(
+    180deg,
+    rgba(224, 37, 71, 0.18) 0%,
+    rgba(196, 18, 48, 0.28) 100%
+  );
+  border-top-color: rgba(236, 77, 98, 0.35);
+}
+
+/* chat-specific dark overrides for hardcoded light glass */
+html[data-theme='dark'] .message.bot .message-bubble,
+html[data-theme='dark'] .transcript-reveal,
+html[data-theme='dark'] .preview-card,
+html[data-theme='dark'] .history-aside,
+html[data-theme='dark'] .upload-pane,
+html[data-theme='dark'] .library-pane,
+html[data-theme='dark'] .answer-card,
+html[data-theme='dark'] .doc-row,
+html[data-theme='dark'] .suggestion,
+html[data-theme='dark'] .identity-stat,
+html[data-theme='dark'] .identity-quick-row,
+html[data-theme='dark'] .hero-stat,
+html[data-theme='dark'] .feature-card,
+html[data-theme='dark'] .how-step,
+html[data-theme='dark'] .pillar,
+html[data-theme='dark'] .stat,
+html[data-theme='dark'] .table-wrap {
+  background: rgba(22, 26, 35, 0.6);
+  color: var(--text);
+}
+
+/* Profile tabs strip — was a light-grey bar in dark mode (visible behind
+   the Account / Security / Preferences tabs). Re-tint to dark glass. */
+html[data-theme='dark'] .profile-tabs {
+  background: rgba(22, 26, 35, 0.7);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+html[data-theme='dark'] .profile-tab {
+  color: var(--text-dim);
+}
+html[data-theme='dark'] .profile-tab:hover {
+  color: var(--text);
+}
+html[data-theme='dark'] .profile-tab.active {
+  background: linear-gradient(135deg, #c41230, #e02547);
+  color: white;
+}
+
+/* Non-pinned history rows get a teal/blue fill in dark mode so the sidebar
+   reads at a glance: blue = regular conversations, amber = pinned. The
+   .pinned override below (later in cascade) keeps gold for pinned rows. */
+html[data-theme='dark'] .history-row {
+  background: rgba(43, 196, 212, 0.10);
+  border-color: rgba(43, 196, 212, 0.22);
+  color: var(--text);
+}
+html[data-theme='dark'] .history-row:hover {
+  background: rgba(43, 196, 212, 0.16);
+  border-color: rgba(43, 196, 212, 0.34);
+}
+html[data-theme='dark'] .history-row.active {
+  background: rgba(43, 196, 212, 0.28);
+  border-color: rgba(43, 196, 212, 0.55);
+  color: #ffffff;
+}
+/* pinned rows in dark mode — keep amber so the visual hierarchy survives */
+html[data-theme='dark'] .history-row.pinned {
+  background: rgba(255, 209, 102, 0.10);
+  border-color: rgba(255, 209, 102, 0.28);
+}
+html[data-theme='dark'] .history-row.pinned:hover {
+  background: rgba(255, 209, 102, 0.16);
+  border-color: rgba(255, 209, 102, 0.4);
+}
+html[data-theme='dark'] .history-row.pinned.active {
+  background: rgba(255, 209, 102, 0.24);
+  border-color: rgba(255, 209, 102, 0.55);
+}
+
+/* nav-inner glass background */
+html[data-theme='dark'] .nav-inner,
+html[data-theme='dark'] .landing-nav {
+  background: rgba(15, 18, 24, 0.7);
+}
+
+/* GooeyNav text colors */
+html[data-theme='dark'] .gooey-nav-container nav ul,
+html[data-theme='dark'] .gooey-nav-container nav ul li {
+  color: var(--text);
+}
+html[data-theme='dark'] .gooey-nav-container nav ul li.active {
+  color: white;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+html {
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font);
+  background:
+    radial-gradient(circle at 18% 8%, rgba(196, 18, 48, 0.06) 0%, transparent 45%) fixed,
+    radial-gradient(circle at 82% 90%, rgba(0, 160, 176, 0.05) 0%, transparent 50%) fixed,
+    var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+a {
+  color: var(--accent-2);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input,
+textarea,
+select {
+  font-family: inherit;
+  color: inherit;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(196, 18, 48, 0.28);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(196, 18, 48, 0.5);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ============ shared primitives ============ */
+.app-shell {
+  position: relative;
+  /* lock to the viewport so the body never scrolls.
+     Pages that legitimately have long content (Landing, etc.) handle
+     their own internal scroll via overflow-y: auto on .page-*. */
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+}
+
+.bg-fx {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.bg-fx::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 70% 80%, rgba(0, 160, 176, 0.05), transparent 55%),
+    radial-gradient(circle at 10% 0%, rgba(196, 18, 48, 0.06), transparent 50%);
+  pointer-events: none;
+}
+.bg-fx .liquid-ether-container {
+  pointer-events: auto;
+  opacity: 0.28;       /* much subtler on a white page */
+  mix-blend-mode: multiply;
+}
+
+.glass {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  box-shadow: var(--shadow);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--border-strong);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--text);
+  padding: 10px 18px;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: transform 0.12s ease, background 0.18s ease, border-color 0.18s ease;
+}
+.btn:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(15, 15, 20, 0.24);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+.btn-primary {
+  background: var(--accent-gradient);
+  border-color: transparent;
+  color: white;
+  box-shadow: 0 10px 30px -10px var(--accent-glow);
+}
+.btn-primary:hover {
+  filter: brightness(1.07);
+}
+.btn-ghost {
+  background: transparent;
+  border-color: var(--border);
+}
+.btn-danger {
+  border-color: rgba(196, 18, 48, 0.35);
+  color: var(--danger);
+  background: rgba(196, 18, 48, 0.06);
+}
+.btn-danger:hover {
+  background: rgba(196, 18, 48, 0.12);
+}
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.field label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-mute);
+}
+.field input,
+.field textarea,
+.field select {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 15px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  border-color: var(--teal);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(0, 160, 176, 0.12);
+}
+.field .hint {
+  font-size: 12px;
+  color: var(--text-mute);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  background: rgba(0, 160, 176, 0.10);
+  color: #04707a;
+  border: 1px solid rgba(0, 160, 176, 0.28);
+  text-transform: capitalize;
+}
+.badge.success {
+  background: rgba(106, 255, 184, 0.1);
+  color: var(--success);
+  border-color: rgba(106, 255, 184, 0.3);
+}
+.badge.warn {
+  background: rgba(201, 139, 27, 0.10);
+  color: var(--warning);
+  border-color: rgba(201, 139, 27, 0.3);
+}
+.badge.danger {
+  background: rgba(196, 18, 48, 0.10);
+  color: var(--danger);
+  border-color: rgba(196, 18, 48, 0.3);
+}
+.badge.mute {
+  background: rgba(15, 15, 20, 0.04);
+  color: var(--text-mute);
+  border-color: var(--border);
+}
+
+.error-banner {
+  background: rgba(196, 18, 48, 0.08);
+  border: 1px solid rgba(196, 18, 48, 0.28);
+  color: #8b0e25;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.success-banner {
+  background: rgba(46, 156, 94, 0.08);
+  border: 1px solid rgba(46, 156, 94, 0.3);
+  color: #1f6e3f;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.empty {
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--text-mute);
+  font-size: 14px;
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(15, 15, 20, 0.05),
+    rgba(15, 15, 20, 0.12),
+    rgba(15, 15, 20, 0.05)
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  border-radius: 10px;
+}
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ============ utilities ============ */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.row.between {
+  justify-content: space-between;
+}
+.row.wrap {
+  flex-wrap: wrap;
+}
+.muted {
+  color: var(--text-mute);
+}
+.dim {
+  color: var(--text-dim);
+}
+.h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.h2 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.small {
+  font-size: 13px;
+}

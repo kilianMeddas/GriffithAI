@@ -1,0 +1,958 @@
+/* ========= overall workspace =========
+   The workspace must be *exactly* viewport-minus-chrome so that the
+   internal chat body (flex: 1 + overflow-y: auto) is forced to scroll
+   inside the box. If we relied only on flex: 1 of an ancestor with
+   min-height: 100vh, growing message lists could push past the viewport
+   and bring back the outer scrollbar — which is what was happening. */
+.workspace {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 18px;
+  align-items: stretch;
+  /* vh fallback for older browsers, dvh for dynamic mobile chrome.
+     Chrome above the workspace: navbar 78px + page-app padding 22+36 =
+     136px. We subtract 144px to leave a 6-8px buffer so the outer
+     scrollbar never appears, even when the navbar fluctuates by a px
+     or two (different fonts, OS chrome, etc.). */
+  height: calc(100vh - 144px);
+  height: calc(100dvh - 144px);
+  min-height: 0;
+}
+.workspace.collapsed {
+  grid-template-columns: 64px minmax(0, 1fr);
+}
+@media (max-width: 1024px) {
+  .workspace {
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 14px;
+  }
+}
+@media (max-width: 880px) {
+  .workspace,
+  .workspace.collapsed {
+    grid-template-columns: 1fr;
+    /* navbar wraps on tablets/phones — give it more room */
+    height: calc(100vh - 180px);
+    height: calc(100dvh - 180px);
+  }
+  .history-aside {
+    display: none;
+  }
+  .workspace.show-history .history-aside {
+    display: flex;
+    position: fixed;
+    inset: 70px 12px 12px;
+    z-index: 25;
+    height: auto;
+    max-height: calc(100dvh - 90px);
+  }
+}
+@media (max-width: 640px) {
+  .workspace,
+  .workspace.collapsed {
+    height: calc(100vh - 160px);
+    height: calc(100dvh - 160px);
+  }
+}
+
+/* ========= history sidebar ========= */
+.history-aside {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.history-aside.collapsed {
+  padding: 12px 6px;
+  align-items: center;
+}
+.history-aside.collapsed .history-list,
+.history-aside.collapsed .history-search,
+.history-aside.collapsed .new-chat-text,
+.history-aside.collapsed .history-aside-title {
+  display: none;
+}
+
+.history-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.history-aside-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-mute);
+  flex: 1;
+}
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-dim);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
+.new-chat {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #c41230 0%, #d23448 55%, #f08596 100%);
+  border: none;
+  color: white;
+  font-weight: 600;
+  font-size: 13px;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 10px 24px -10px rgba(196, 18, 48, 0.55);
+  transition:
+    transform 0.1s ease,
+    filter 0.15s ease;
+}
+.new-chat:hover {
+  filter: brightness(1.05);
+}
+.new-chat:active {
+  transform: translateY(1px);
+}
+.new-chat .plus {
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.history-search {
+  position: relative;
+}
+.history-search input {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 12px 8px 32px;
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.history-search input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(0, 160, 176, 0.12);
+}
+.history-search .icn {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-mute);
+  font-size: 13px;
+}
+
+.history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.history-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--text-dim);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+  position: relative;
+}
+.history-row:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+}
+.history-row.active {
+  background: rgba(0, 160, 176, 0.2);
+  color: white;
+  border-color: rgba(0, 160, 176, 0.4);
+}
+.history-row .label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.history-row .stamp {
+  font-size: 10px;
+  color: var(--text-mute);
+  letter-spacing: 0.04em;
+}
+.history-row .row-delete {
+  opacity: 0;
+  background: transparent;
+  border: none;
+  color: var(--text-mute);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1;
+}
+.history-row:hover .row-delete {
+  opacity: 1;
+}
+.history-row .row-delete:hover {
+  color: var(--danger);
+  background: rgba(255, 102, 128, 0.1);
+}
+
+.history-empty {
+  font-size: 12px;
+  color: var(--text-mute);
+  padding: 16px 8px;
+  text-align: center;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+}
+
+/* ========= conversation pane ========= */
+.conversation {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.conv-head {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.conv-head h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+.conv-head .sub {
+  font-size: 12px;
+  color: var(--text-mute);
+}
+.conv-head .mobile-history {
+  display: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+@media (max-width: 880px) {
+  .conv-head .mobile-history {
+    display: inline-flex;
+  }
+}
+
+.conv-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px 22px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 0;
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+}
+/* dedicated scrollbar for the chat so it's clearly visible inside the
+   pane (not the page-level one). */
+.conv-body::-webkit-scrollbar {
+  width: 8px;
+}
+.conv-body::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 8px 0;
+}
+.conv-body::-webkit-scrollbar-thumb {
+  background: rgba(0, 160, 176, 0.32);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+.conv-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 160, 176, 0.6);
+  background-clip: content-box;
+}
+/* Firefox */
+.conv-body {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 160, 176, 0.45) transparent;
+}
+@media (max-width: 640px) {
+  .conv-body {
+    padding: 16px 14px 12px;
+    gap: 14px;
+  }
+  .conv-head {
+    padding: 12px 14px;
+  }
+  .conv-head h2 {
+    font-size: 14px;
+  }
+  .composer {
+    padding: 10px 14px 14px;
+  }
+}
+
+/* empty state */
+.empty-conv {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  text-align: center;
+  padding: 36px 16px;
+}
+.empty-conv .glow {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(196, 18, 48, 0.4), transparent 70%);
+  filter: blur(8px);
+}
+.empty-conv h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.empty-conv p {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 14px;
+  max-width: 460px;
+}
+
+.suggestions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+  width: 100%;
+  max-width: 660px;
+  margin-top: 12px;
+}
+.suggestion {
+  background: rgba(247, 248, 250, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  text-align: left;
+  font-size: 13px;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+.suggestion:hover {
+  background: rgba(0, 160, 176, 0.1);
+  border-color: rgba(0, 160, 176, 0.4);
+  color: var(--text);
+}
+
+/* message bubbles */
+.message {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  position: relative;
+}
+.message.you {
+  justify-content: flex-end;
+}
+
+/* per-turn delete button — slides in on hover of the user bubble row */
+.message-delete {
+  align-self: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 102, 128, 0.08);
+  border: 1px solid rgba(255, 102, 128, 0.3);
+  color: var(--danger);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+  opacity: 0;
+  transform: translateX(6px);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease,
+    background 0.18s ease;
+  flex-shrink: 0;
+}
+.message.you:hover .message-delete,
+.message-delete:focus-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+.message-delete:hover {
+  background: rgba(255, 102, 128, 0.18);
+  border-color: rgba(255, 102, 128, 0.5);
+}
+@media (max-width: 640px) {
+  /* on touch screens hover isn't reliable — always show */
+  .message-delete {
+    opacity: 1;
+    transform: translateX(0);
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+  }
+}
+.message-bubble {
+  max-width: min(720px, 80%);
+  padding: 14px 18px;
+  border-radius: 16px;
+  font-size: 15px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 640px) {
+  .message-bubble {
+    max-width: 90%;
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+  .message-avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+}
+.message.you .message-bubble {
+  background: linear-gradient(
+    135deg,
+    rgba(196, 18, 48, 0.42),
+    rgba(240, 133, 150, 0.32)
+  );
+  border: 1px solid rgba(196, 18, 48, 0.32);
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+.message.bot .message-bubble {
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 4px;
+}
+.message-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  font-size: 13px;
+  color: white;
+  flex-shrink: 0;
+}
+.message.bot .message-avatar {
+  background: linear-gradient(135deg, #c41230, #f08596);
+}
+.message.you .message-avatar {
+  background: linear-gradient(135deg, #c41230, #d23448);
+  color: white;
+}
+.message-meta {
+  font-size: 11px;
+  color: var(--text-mute);
+  margin-top: 6px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* typing dots while the model is "thinking" */
+.message-bubble.typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 18px;
+}
+.message-bubble.typing span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  opacity: 0.4;
+  animation: typing-bounce 1s infinite ease-in-out;
+}
+.message-bubble.typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.message-bubble.typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes typing-bounce {
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  40% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+/* audio + transcript card under bot reply */
+.answer-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(247, 248, 250, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.answer-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 2px 4px;
+  flex-wrap: wrap;
+}
+.message-meta-inline {
+  font-size: 11px;
+  color: var(--text-mute);
+  letter-spacing: 0.03em;
+}
+.answer-tool-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* pin button on each history row — always visible if pinned,
+   hover-revealed otherwise. Click toggles. */
+.row-pin-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-mute);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1;
+  opacity: 0;
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease,
+    background 0.15s ease;
+  flex-shrink: 0;
+}
+.history-row:hover .row-pin-btn,
+.row-pin-btn.pinned,
+.row-pin-btn:focus-visible {
+  opacity: 1;
+}
+.row-pin-btn.pinned {
+  color: #ffd166;
+  filter: drop-shadow(0 0 4px rgba(255, 209, 102, 0.5));
+}
+.row-pin-btn:hover {
+  color: #ffd166;
+  background: rgba(255, 209, 102, 0.12);
+}
+
+/* subtle highlight tint on pinned rows so they stand out at the top */
+.history-row.pinned {
+  background: rgba(255, 209, 102, 0.04);
+  border-color: rgba(255, 209, 102, 0.18);
+}
+.history-row.pinned:hover {
+  background: rgba(255, 209, 102, 0.08);
+}
+.history-row.pinned.active {
+  background: rgba(255, 209, 102, 0.14);
+  border-color: rgba(255, 209, 102, 0.4);
+  /* override the white text the generic .active rule applies — keep the
+     label readable against the amber tint */
+  color: var(--text);
+}
+
+.transcript-reveal {
+  margin: 2px 0 0;
+  padding: 14px 16px;
+  background: rgba(247, 248, 250, 0.9);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-dim);
+  white-space: pre-wrap;
+  animation: transcript-fade 0.22s ease;
+}
+@keyframes transcript-fade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* old .audio-player rules removed — see components/AnswerAudio.css for
+   the new .audio-pro waveform player */
+
+.transcript-tools {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+/* docked composer */
+.composer {
+  border-top: 1px solid rgba(196, 18, 48, 0.45);
+  background: linear-gradient(
+    180deg,
+    rgba(240, 133, 150, 0.45) 0%,
+    rgba(196, 18, 48, 0.32) 100%
+  );
+  padding: 14px 22px 18px;
+}
+.composer-inner {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 8px 8px 8px 14px;
+  transition: border-color 0.15s ease;
+  /* cursor-tracking variables, driven by onMouseMove in Client.jsx */
+  --mx: 50%;
+  --my: 50%;
+  --glow-opacity: 0;
+}
+.composer-inner:focus-within {
+  border-color: rgba(0, 160, 176, 0.55);
+}
+
+/* Edge-only cursor glow.
+   The ::after sits exactly on the border. It IS a coloured ring, but we
+   mask it to a small radial window centered on the cursor — so only the
+   slice of the ring directly under the cursor lights up. A drop-shadow
+   then traces a soft halo around that slice. Because the source is the
+   border itself, no light ever emanates from the center of the input. */
+.composer-inner::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border: 1.5px solid #50b0c0;
+  border-radius: inherit;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(
+    180px circle at var(--mx) var(--my),
+    black 0%,
+    black 22%,
+    transparent 55%
+  );
+  mask-image: radial-gradient(
+    180px circle at var(--mx) var(--my),
+    black 0%,
+    black 22%,
+    transparent 55%
+  );
+  filter: drop-shadow(0 0 4px rgba(0, 160, 176, 0.7))
+    drop-shadow(0 0 10px rgba(0, 160, 176, 0.3));
+  opacity: var(--glow-opacity);
+  transition: opacity 0.18s ease;
+}
+.composer-inner textarea {
+  align-self: center;
+}
+.composer-inner:focus-within {
+  border-color: rgba(0, 160, 176, 0.55);
+}
+.composer-inner textarea {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 15px;
+  resize: none;
+  min-height: 26px;
+  max-height: 160px;
+  line-height: 1.5;
+}
+.composer-inner textarea::placeholder {
+  color: var(--text-mute);
+}
+.composer-hint {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-mute);
+  margin-top: 6px;
+  padding: 0 4px;
+}
+
+/* ==============================================================
+   AI GENERATING LOADER — replaces the typing dots while the bot
+   is producing an answer. The bubble becomes a 220px square to
+   give the round loader room to breathe.
+   (Original loader from Uiverse.io by dexter-st, palette tuned
+   to the GriffithAI red/pink tones.)
+   ============================================================== */
+.message-bubble.aigen-bubble {
+  width: 280px;
+  height: 280px;
+  min-height: 280px;
+  max-width: 280px !important;
+  display: grid;
+  place-items: center;
+  padding: 18px !important;
+  border-radius: 24px !important;
+  background:
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(196, 18, 48, 0.18),
+      transparent 60%
+    ),
+    rgba(255, 255, 255, 0.88) !important;
+  border: 1px solid rgba(196, 18, 48, 0.22) !important;
+  box-shadow:
+    0 18px 40px -16px rgba(196, 18, 48, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85) !important;
+  position: relative;
+  overflow: hidden;
+}
+html[data-theme="dark"] .message-bubble.aigen-bubble {
+  background:
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(236, 77, 98, 0.22),
+      transparent 60%
+    ),
+    rgba(22, 26, 35, 0.85) !important;
+  border-color: rgba(236, 77, 98, 0.32) !important;
+}
+
+.aigen-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  height: 180px;
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-size: 1.2em;
+  font-weight: 300;
+  color: white;
+  border-radius: 50%;
+  background-color: transparent;
+  user-select: none;
+  transform: translateY(-20px);
+}
+
+.aigen-ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background-color: transparent;
+  animation: aigen-rotate 2s linear infinite;
+  z-index: 0;
+}
+
+@keyframes aigen-rotate {
+  0% {
+    transform: rotate(90deg);
+    box-shadow:
+      0 10px 20px 0 #fff inset,
+      0 20px 30px 0 #f08596 inset,
+      0 60px 60px 0 #c41230 inset;
+  }
+  50% {
+    transform: rotate(270deg);
+    box-shadow:
+      0 10px 20px 0 #fff inset,
+      0 20px 10px 0 #d60a47 inset,
+      0 40px 60px 0 #8b0e25 inset;
+  }
+  100% {
+    transform: rotate(450deg);
+    box-shadow:
+      0 10px 20px 0 #fff inset,
+      0 20px 30px 0 #f08596 inset,
+      0 60px 60px 0 #c41230 inset;
+  }
+}
+
+.aigen-letter {
+  display: inline-block;
+  opacity: 0.4;
+  transform: translateY(0);
+  animation: aigen-letter-anim 2s infinite;
+  z-index: 1;
+  border-radius: 50ch;
+  border: none;
+}
+
+.aigen-letter:nth-child(1) {
+  animation-delay: 0s;
+}
+.aigen-letter:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.aigen-letter:nth-child(3) {
+  animation-delay: 0.2s;
+}
+.aigen-letter:nth-child(4) {
+  animation-delay: 0.3s;
+}
+.aigen-letter:nth-child(5) {
+  animation-delay: 0.4s;
+}
+.aigen-letter:nth-child(6) {
+  animation-delay: 0.5s;
+}
+.aigen-letter:nth-child(7) {
+  animation-delay: 0.6s;
+}
+.aigen-letter:nth-child(8) {
+  animation-delay: 0.7s;
+}
+.aigen-letter:nth-child(9) {
+  animation-delay: 0.8s;
+}
+.aigen-letter:nth-child(10) {
+  animation-delay: 0.9s;
+}
+
+@keyframes aigen-letter-anim {
+  0%,
+  100% {
+    opacity: 0.4;
+    transform: translateY(0);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+  40% {
+    opacity: 0.7;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aigen-ring,
+  .aigen-letter {
+    animation: none !important;
+    opacity: 1 !important;
+  }
+}
+
+/* ==========================
+   Progress status
+   ========================== */
+
+.aigen-progress {
+  position: absolute;
+  bottom: 0px;
+  left: 12px;
+  right: 12px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.aigen-progress-text {
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.3;
+  min-height: 0px;
+  color: #c41230;
+}
+
+.aigen-progress-bar {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+
+  background: rgba(196, 18, 48, 0.12);
+  border: 1px solid rgba(196, 18, 48, 0.15);
+}
+
+.aigen-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+
+  background: linear-gradient(90deg, #c41230, #d23448, #f08596);
+
+  transition: width 0.4s ease;
+}
+
+.aigen-progress-percent {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #c41230;
+}

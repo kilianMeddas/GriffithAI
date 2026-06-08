@@ -1,0 +1,147 @@
+.page {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  width: 100%;
+}
+
+.page-app {
+  padding: 22px 24px 36px;
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+/* admin pages still need to scroll long content inside their card; the
+   .fill-page wrapper takes care of internal scrolling via min-height: 0
+   on its children, so .page-app being overflow: hidden is fine. */
+
+.page-auth {
+  display: grid;
+  place-items: center;
+  padding: 48px 20px;
+  width: 100%;
+  /* let very-tall content scroll inside the auth screen on short viewports */
+  overflow-y: auto;
+}
+
+.page-landing {
+  padding: 0;
+  width: 100%;
+  /* same idea: allow scroll inside the landing page if the hero+features+footer
+     exceed the viewport on small screens */
+  overflow-y: auto;
+}
+
+@media (max-width: 640px) {
+  .page-app {
+    padding: 16px 14px 28px;
+  }
+  .page-auth {
+    padding: 24px 14px;
+  }
+}
+
+.section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 22px;
+}
+.section-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.section-header p {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 15px;
+  max-width: 640px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.toolbar .search {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+}
+.toolbar .search input {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px 10px 38px;
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+}
+.toolbar .search input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(0, 160, 176, 0.12);
+}
+.toolbar .search .icn {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-mute);
+  font-size: 14px;
+}
+.toolbar select {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 14px;
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+}
+
+.loading-shell {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 50;
+}
+.loading-pulse {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, #c41230, #f08596, #00A0B0, #c41230);
+  filter: blur(2px);
+  animation: spin 1.6s linear infinite;
+  position: relative;
+}
+.loading-pulse::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  box-shadow: var(--shadow);
+}

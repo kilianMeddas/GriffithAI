@@ -1,0 +1,355 @@
+/* ============ Upload ============ */
+.dropzone {
+  border: 1.5px dashed rgba(196, 18, 48, 0.35);
+  background: rgba(196, 18, 48, 0.04);
+  border-radius: 16px;
+  padding: 24px 28px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+.dropzone:hover,
+.dropzone.dragging {
+  background: rgba(196, 18, 48, 0.1);
+  border-color: rgba(240, 133, 150, 0.55);
+}
+.dropzone .icn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c41230, #f08596);
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  color: white;
+  margin-bottom: 4px;
+}
+.dropzone .title {
+  font-weight: 600;
+}
+.dropzone .sub {
+  font-size: 13px;
+  color: var(--text-mute);
+}
+.dropzone input[type="file"] {
+  display: none;
+}
+.dropzone .btn {
+  margin-top: 6px;
+}
+
+/* ---- Folder-based upload variant ---- */
+.dropzone-folder {
+  border: 1.5px dashed rgba(196, 18, 48, 0.35);
+  background: rgba(196, 18, 48, 0.04);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 24px 18px 22px;
+  text-align: center;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.dropzone-folder.dragging {
+  background: rgba(196, 18, 48, 0.15);
+  border-color: rgba(240, 133, 150, 0.7);
+  box-shadow: 0 0 0 4px rgba(196, 18, 48, 0.1) inset;
+}
+.dropzone-folder-wrap {
+  /* the Folder needs vertical space above it because it grows upward
+     when open (papers fan out above) */
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-top: 80px;
+  flex-shrink: 0;
+  pointer-events: none; /* let mouse events fall through to the dropzone */
+}
+.dropzone-folder-wrap .folder {
+  pointer-events: auto;
+}
+.dropzone-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.dropzone-copy .title {
+  font-size: 15px;
+  font-weight: 600;
+}
+.dropzone-copy .sub {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-mute);
+}
+.dropzone-copy .btn {
+  margin-top: 10px;
+}
+
+/* ============ Documents page two-column layout ============ */
+.documents-page .documents-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+@media (max-width: 880px) {
+  .documents-page .documents-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.upload-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  align-self: start;
+  /* override the fill-page max-height inheritance */
+  max-height: 100%;
+}
+.upload-pane .pane-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.upload-pane .pane-title {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-mute);
+  font-weight: 600;
+}
+
+.library-pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* friendly empty state for the library */
+.empty-docs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 50px 24px;
+  color: var(--text-mute);
+  flex: 1;
+}
+.empty-docs .empty-icn {
+  font-size: 38px;
+  filter: drop-shadow(0 6px 14px rgba(196, 18, 48, 0.3));
+  margin-bottom: 6px;
+}
+.empty-docs .empty-title {
+  color: var(--text);
+  font-weight: 600;
+  font-size: 15px;
+}
+.empty-docs .empty-sub {
+  font-size: 13px;
+  max-width: 320px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.upload-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-dim);
+  padding: 8px 12px;
+  background: rgba(196, 18, 48, 0.08);
+  border-radius: 10px;
+  border: 1px solid rgba(196, 18, 48, 0.25);
+}
+
+/* ============ Lists & Tables ============ */
+/* Applied to the outermost wrapper of each admin page. Keeps the card
+   compact (capped height) while ensuring the inner list scrolls and the
+   outer page never does. */
+.fill-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+}
+.fill-page > .glass {
+  display: flex;
+  flex-direction: column;
+  /* compact card height, but never taller than what fits in the viewport
+     after the navbar + section header (~240px of chrome above). */
+  max-height: min(560px, calc(100vh - 240px));
+  min-height: 0;
+}
+.fill-page .list-scroll {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  overflow: auto;
+}
+.fill-page .table-wrap {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  overflow: auto;
+}
+
+.list-card {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 0;
+}
+
+.list-scroll {
+  max-height: 56vh;
+  overflow: auto;
+  margin: 0 -6px;
+  padding: 0 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.doc-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(247, 248, 250, 0.85);
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+.doc-row:hover {
+  border-color: rgba(196, 18, 48, 0.25);
+}
+.doc-row .name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.doc-row .filename {
+  font-weight: 500;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.doc-row .size {
+  font-size: 12px;
+  color: var(--text-mute);
+}
+.doc-row .stamp {
+  font-size: 12px;
+  color: var(--text-mute);
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .doc-row {
+    grid-template-columns: 1fr auto;
+  }
+  .doc-row .stamp,
+  .doc-row .badge {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ============ Users table ============ */
+.user-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.user-table th,
+.user-table td {
+  text-align: left;
+  padding: 12px 14px;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.user-table th {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-mute);
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.02);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.user-table tr:hover td {
+  background: rgba(255, 255, 255, 0.025);
+}
+.user-table tr:last-child td {
+  border-bottom: none;
+}
+.user-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.user-name .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c41230, #f08596);
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  font-size: 12px;
+  color: white;
+}
+.user-name .meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.user-name .name {
+  font-weight: 500;
+  font-size: 14px;
+}
+.user-name .email {
+  font-size: 12px;
+  color: var(--text-mute);
+}
+
+.table-wrap {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: auto;
+  max-height: 60vh;
+}
+.table-wrap .user-table {
+  min-width: 540px;
+}
+@media (max-width: 640px) {
+  .user-table th,
+  .user-table td {
+    padding: 10px;
+    font-size: 13px;
+  }
+}
